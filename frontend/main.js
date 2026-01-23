@@ -9,7 +9,7 @@ const apiKey = '502a8610-7b80-4b15-93a8-6f0ef2b8e539';
 
 // Camada base escura
 const osmLayer = L.tileLayer(
-    'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+    `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`,
     {
         maxZoom: 19,
         attribution: '© OpenMapTiles © OpenStreetMap contributors'
