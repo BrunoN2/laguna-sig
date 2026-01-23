@@ -4,6 +4,9 @@ const lagunaCoords = [-28.4833, -48.7835];
 // Inicializar mapa
 const map = L.map('map').setView(lagunaCoords, 14);
 
+// API Key do Stadia Maps
+const apiKey = '502a8610-7b80-4b15-93a8-6f0ef2b8e539';
+
 // Camada base escura
 const osmLayer = L.tileLayer(
     'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
