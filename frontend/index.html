@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+
     <title>LAGUNA/SC - Mapa Inteligente</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
     <style>
+        /* =========================================
+           ESTILO CYBERPUNK / DARK MODE
+           ========================================= */
         * {
             margin: 0;
             padding: 0;
@@ -16,8 +21,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #020617;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #020617; /* Fundo super escuro */
             color: #ffffff;
             height: 100vh;
             overflow: hidden;
@@ -26,113 +31,79 @@
         .container {
             display: flex;
             height: 100vh;
+            width: 100vw;
         }
 
-        /* SIDEBAR */
+        /* --- SIDEBAR (BARRA LATERAL) --- */
         .sidebar {
-            width: 320px;
-            background: radial-gradient(circle at top left, #0f172a 0, #020617 55%);
-            border-right: 1px solid #1f2937;
+            width: 350px;
+            /* O Gradient que dá o clima */
+            background: radial-gradient(circle at top left, #1e293b 0, #020617 70%);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
             padding: 24px;
-            gap: 24px;
+            gap: 20px;
+            z-index: 1000;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
         }
 
+        /* Logo */
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .logo-icon {
-            width: 26px;
-            height: 26px;
-            border-radius: 999px;
-            background: radial-gradient(circle, #22d3ee, #6366f1);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #22d3ee, #6366f1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 20px;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
         }
 
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo-title {
-            font-size: 14px;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: #9ca3af;
-        }
-
-        .logo-sub {
-            font-size: 18px;
-            font-weight: 600;
-            color: #e5e7eb;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .menu-title {
+        .logo-text div:first-child {
             font-size: 11px;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            letter-spacing: 0.16em;
-            color: #6b7280;
+            color: #94a3b8;
         }
 
-        .menu-item {
-            padding: 10px 12px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            color: #d1d5db;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.2s;
+        .logo-text div:last-child {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .menu-item span.icon {
-            font-size: 16px;
-        }
-
-        .menu-item.active {
-            background: linear-gradient(90deg, rgba(56,189,248,0.15), rgba(129,140,248,0.15));
-            border-color: rgba(56,189,248,0.4);
-            color: #e5e7eb;
-        }
-
-        .menu-item:hover {
-            background: rgba(15,23,42,0.8);
-            border-color: rgba(31,41,55,0.8);
-        }
-
+        /* Busca */
         .search-box {
             width: 100%;
-            padding: 11px 14px;
-            background: #020617;
-            border: 1px solid #1f2937;
-            border-radius: 999px;
-            color: #e5e7eb;
-            font-size: 13px;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-size: 14px;
+            transition: all 0.3s;
         }
 
         .search-box:focus {
             outline: none;
             border-color: #22d3ee;
-            box-shadow: 0 0 0 1px rgba(34,211,238,0.8);
+            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+            background: rgba(15, 23, 42, 1);
         }
 
+        /* Filtros */
         .filters {
             display: flex;
             flex-wrap: wrap;
@@ -140,384 +111,241 @@
         }
 
         .filter-pill {
-            padding: 8px 12px;
-            border-radius: 999px;
-            font-size: 11px;
-            border: 1px solid #1f2937;
-            color: #9ca3af;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
             cursor: pointer;
-            background: rgba(15,23,42,0.8);
+            background: rgba(255, 255, 255, 0.03);
             transition: all 0.2s;
-        }
-
-        .filter-pill.active {
-            background: linear-gradient(90deg, #22d3ee, #6366f1);
-            border-color: transparent;
-            color: #0b1120;
         }
 
         .filter-pill:hover {
             border-color: #22d3ee;
+            color: #fff;
         }
 
-        .poi-section-title {
+        .filter-pill.active {
+            background: linear-gradient(90deg, #22d3ee, #6366f1);
+            border: none;
+            color: #020617;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Lista */
+        .section-header {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.16em;
-            color: #6b7280;
+            letter-spacing: 0.1em;
+            color: #64748b;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: 700;
         }
 
-        .poi-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 340px;
+        .poi-list-container {
+            flex: 1;
             overflow-y: auto;
+            padding-right: 5px;
         }
+
+        /* Scrollbar bonita */
+        .poi-list-container::-webkit-scrollbar { width: 6px; }
+        .poi-list-container::-webkit-scrollbar-track { background: transparent; }
+        .poi-list-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
         .poi-item {
-            padding: 10px 12px;
-            background: rgba(15,23,42,0.9);
-            border-radius: 10px;
-            border: 1px solid #111827;
+            padding: 14px;
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 12px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
         }
 
         .poi-item:hover {
             border-color: #22d3ee;
-            transform: translateX(3px);
-            background: rgba(15,23,42,1);
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        .poi-name {
-            font-weight: 500;
-            margin-bottom: 2px;
-            color: #e5e7eb;
-        }
+        .poi-name { font-weight: 600; color: #f1f5f9; font-size: 14px; margin-bottom: 4px; }
+        .poi-type { font-size: 12px; color: #94a3b8; }
 
-        .poi-type {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-        .poi-distance {
-            font-size: 11px;
-            color: #22d3ee;
-            margin-top: 4px;
-        }
-
-        /* MAP CONTAINER */
+        /* --- MAPA --- */
         .map-container {
             flex: 1;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(circle at center, #020617 0, #000 70%);
+            background: #000;
+        }
+
+        #map { width: 100%; height: 100%; z-index: 1; }
+
+        /* Elementos Flutuantes (Glassmorphism) */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            z-index: 500;
         }
 
         .map-header {
-            padding: 14px 22px;
-            background: rgba(2,6,23,0.96);
-            border-bottom: 1px solid #111827;
+            position: absolute;
+            top: 20px; left: 20px;
+            padding: 16px 24px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(18px);
+            gap: 15px;
         }
 
-        .map-title-block {
+        .map-title { font-size: 16px; font-weight: 600; color: #fff; }
+        .map-subtitle { font-size: 12px; color: #94a3b8; }
+
+        .legend {
+            position: absolute;
+            bottom: 90px; right: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
-        }
-
-        .map-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: #e5e7eb;
-        }
-
-        .map-subtitle {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-        .stats {
-            display: flex;
-            gap: 16px;
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .stat-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: radial-gradient(circle, #22d3ee, #6366f1);
-        }
-
-        #map {
-            flex: 1;
-        }
-
-        .leaflet-container {
-            background: radial-gradient(circle at center, #020617 0, #000 70%);
-        }
-
-        .leaflet-popup-content-wrapper {
-            background: #020617;
-            border-radius: 10px;
-            box-shadow: 0 10px 35px rgba(15,23,42,0.9);
-            border: 1px solid rgba(56,189,248,0.5);
-        }
-
-        .leaflet-popup-content {
-            color: #e5e7eb;
-            font-size: 12px;
-        }
-
-        .leaflet-popup-tip {
-            background: #020617;
-        }
-
-        .route-legend {
-            position: absolute;
-            bottom: 70px;
-            right: 20px;
-            background: rgba(2,6,23,0.9);
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1px solid #111827;
-            z-index: 400;
-            font-size: 11px;
-            color: #9ca3af;
-            backdrop-filter: blur(18px);
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
             gap: 8px;
-            margin-bottom: 6px;
+            min-width: 140px;
         }
 
-        .legend-color {
-            width: 18px;
-            height: 3px;
-            border-radius: 999px;
-        }
+        .legend-item { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #cbd5e1; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
 
-        .color-main {
-            background: linear-gradient(90deg, #22d3ee, #6366f1);
-        }
-
-        .color-secondary {
-            background: linear-gradient(90deg, #6366f1, #a855f7);
-        }
-
-        .color-poi {
-            background: linear-gradient(90deg, #ec4899, #f97316);
-        }
-
-        /* brilhos nas rotas */
-        .route-base {
-            filter: drop-shadow(0 0 6px rgba(34,211,238,0.7));
-        }
-
-        .route-glow {
-            filter: drop-shadow(0 0 12px rgba(56,189,248,1));
-        }
-
-        .light-route {
-            filter: drop-shadow(0 0 14px rgba(248,250,252,0.95));
-            stroke-linecap: round;
-        }
-
-        /* BAR INFERIOR */
+        /* Barra Inferior */
         .bottom-bar {
             position: absolute;
-            left: 50%;
-            bottom: 18px;
+            bottom: 24px; left: 50%;
             transform: translateX(-50%);
             display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 401;
+            gap: 12px;
+            z-index: 500;
         }
 
-        .bottom-search {
-            min-width: 280px;
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(2,6,23,0.94);
-            border: 1px solid #111827;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #9ca3af;
-            font-size: 12px;
-        }
-
-        .bottom-search input {
-            background: transparent;
+        .btn-action {
+            padding: 12px 24px;
+            border-radius: 30px;
             border: none;
-            outline: none;
-            color: #e5e7eb;
-            font-size: 12px;
-            width: 100%;
-        }
-
-        .bottom-btn {
-            padding: 9px 14px;
-            border-radius: 999px;
-            font-size: 11px;
-            border: 1px solid #111827;
-            background: rgba(15,23,42,0.94);
-            color: #e5e7eb;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            color: white;
             transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .bottom-btn:hover {
-            border-color: #22d3ee;
-            background: rgba(15,23,42,1);
+        .btn-report {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: 1px solid #f87171;
         }
 
-        @media (max-width: 900px) {
-            .container {
-                flex-direction: column;
-            }
+        .btn-report:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
 
-            .sidebar {
-                width: 100%;
-                max-height: 42vh;
-                padding: 16px;
-                gap: 16px;
-            }
+        /* Efeitos Especiais de Rota */
+        .route-glow { filter: drop-shadow(0 0 8px #22d3ee); }
+        .light-route { filter: drop-shadow(0 0 10px rgba(255,255,255,0.9)); stroke-linecap: round; }
 
-            .map-container {
-                height: 58vh;
-            }
+        /* Animação da Estrela */
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(255,215,0,0.7)); }
+            50% { transform: scale(1.3); filter: drop-shadow(0 0 15px rgba(255,215,0,1)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(255,215,0,0.7)); }
+        }
+        .star-pulse { animation: pulse 1.5s infinite; }
 
-            .route-legend {
-                bottom: 80px;
-                right: 10px;
-            }
+        /* Popups Customizados */
+        .leaflet-popup-content-wrapper {
+            background: #0f172a;
+            color: #fff;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 0;
+            overflow: hidden;
+        }
+        .leaflet-popup-content { margin: 15px; }
+        .leaflet-popup-tip { background: #334155; }
+        .leaflet-container a.leaflet-popup-close-button { color: #94a3b8; }
 
-            .bottom-bar {
-                bottom: 12px;
-            }
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; height: 45vh; border-right: none; border-bottom: 1px solid #334155; }
+            .map-header { display: none; }
+            .legend { bottom: 80px; right: 10px; padding: 10px; }
+            .bottom-bar { width: 90%; justify-content: center; }
+            .btn-action { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="logo">
             <div class="logo-icon">★</div>
             <div class="logo-text">
-                <div class="logo-title">Laguna</div>
-                <div class="logo-sub">Mapa Inteligente</div>
-            </div>
-        </div>
-
-        <div class="menu">
-            <div class="menu-title">Navegação</div>
-            <div class="menu-item active">
-                <span class="icon">📌</span>
-                <span>Pontos de Interesse</span>
-            </div>
-            <div class="menu-item">
-                <span class="icon">🛣️</span>
-                <span>Rotas</span>
-            </div>
-            <div class="menu-item">
-                <span class="icon">⚙️</span>
-                <span>Configurações</span>
+                <div>LAGUNA</div>
+                <div>Smart Map</div>
             </div>
         </div>
 
         <div>
-            <input
-                    type="text"
-                    class="search-box"
-                    id="searchInput"
-                    placeholder="Buscar rotas ou pontos..."
-            >
+            <input type="text" id="searchInput" class="search-box" placeholder="Buscar locais, ruas...">
         </div>
 
         <div>
-            <div class="menu-title" style="margin-bottom: 6px;">Filtros rápidos</div>
+            <div class="section-header">Filtrar Mapa</div>
             <div class="filters">
-                <button class="filter-pill active" data-filter="all">Todos</button>
-                <button class="filter-pill" data-filter="landmark">Históricos</button>
-                <button class="filter-pill" data-filter="service">Serviços</button>
+                <div class="filter-pill active" data-filter="all">Todos</div>
+                <div class="filter-pill" data-filter="landmark">Turismo</div>
+                <div class="filter-pill" data-filter="service">Serviços</div>
             </div>
         </div>
 
-        <div>
-            <div class="poi-section-title" style="margin-bottom: 8px;">Pontos próximos</div>
+        <div class="poi-list-container">
+            <div class="section-header">Destaques Próximos</div>
             <div class="poi-list" id="poiList">
-                <!-- preenchido via JS -->
             </div>
         </div>
     </aside>
 
-    <!-- MAP CONTAINER -->
     <main class="map-container">
-        <header class="map-header">
-            <div class="map-title-block">
-                <div class="map-title">Visão Geral de Laguna</div>
-                <div class="map-subtitle">Rotas principais, pontos de interesse e transmissões ao vivo</div>
-            </div>
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-dot"></div>
-                    <span>6 rotas destacadas</span>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-dot"></div>
-                    <span>5 pontos de interesse</span>
-                </div>
+        <header class="map-header glass-panel">
+            <div>
+                <div class="map-title">Visão Geral da Cidade</div>
+                <div class="map-subtitle">Monitoramento em Tempo Real • Rotas • Turismo</div>
             </div>
         </header>
 
         <div id="map"></div>
 
-        <div class="route-legend">
-            <div class="legend-item">
-                <div class="legend-color color-main"></div>
-                <span>Rota Principal</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color color-secondary"></div>
-                <span>Rota Secundária</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color color-poi"></div>
-                <span>Ponto de Interesse</span>
-            </div>
+        <div class="legend glass-panel">
+            <div class="legend-item"><div class="dot" style="background:#22d3ee; color:#22d3ee"></div> Rota Principal</div>
+            <div class="legend-item"><div class="dot" style="background:#ec4899; color:#ec4899"></div> Serviços</div>
+            <div class="legend-item"><div class="dot" style="background:#f97316; color:#f97316"></div> Turismo</div>
+            <div class="legend-item"><div class="dot" style="background:gold; color:gold"></div> Alerta Policial</div>
         </div>
 
         <div class="bottom-bar">
-            <div class="bottom-search">
-                🔍
-                <input id="bottomSearch" placeholder="Buscar local...">
-            </div>
-            <button class="bottom-btn">
-                🧭 Rota
+            <button id="btnReport" class="btn-action btn-report glass-panel">
+                🚨 REPORTAR POLÍCIA
             </button>
         </div>
     </main>
